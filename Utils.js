@@ -1,4 +1,4 @@
-const apiUrl = 'https://crudcrud.com/api/b892a009855e4aef81d9eb4dfd65e4ad/unicorns';
+const apiUrl = 'https://crudcrud.com/api/7667f48a89a847c6bb3751f4b33a800e/unicorns';
 
 export async function cadastrarCliente(cliente) {
   try {
@@ -33,3 +33,5 @@ export async function excluirCliente(id) {
     console.error('Erro ao excluir cliente:', error);
   }
 }
+
+export const get = (_id_) => document.getElementById(_id_);

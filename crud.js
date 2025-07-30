@@ -1,62 +1,47 @@
-const apiUrl = 'https://crudcrud.com/api/b892a009855e4aef81d9eb4dfd65e4ad/unicorns'; //ENDPOINT CRUD
+import { Cliente } from './Classes.js';
+import { cadastrarCliente, listarClientes, excluirCliente, get } from './Utils.js';
 
-const form = document.getElementById('clienteForm');
-const listaClientes = document.getElementById('listaClientes');
+const form = get('clienteForm');
+const listaClientes = get('listaClientes');
 
-// Cadastrar cliente
+// Submeter o formulário
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const nome = document.getElementById('nome').value;
-  const email = document.getElementById('email').value;
+  const nome = get('nome').value;
+  const email = get('email').value;
 
-  const cliente = { nome, email };
+  const novoCliente = new Cliente(nome, email);
 
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(cliente)
-    });
+  const sucesso = await cadastrarCliente(novoCliente);
 
-    if (response.ok) {
-      form.reset();
-    }
-  } catch (error) {
-    console.error('Erro ao cadastrar cliente:', error);
+  if (sucesso) {
+    form.reset();
+    carregarClientes();
   }
 });
 
-// Listar clientes
+// Carregar e exibir os clientes
 async function carregarClientes() {
   listaClientes.innerHTML = '';
+  const clientes = await listarClientes();
 
-  try {
-    const response = await fetch(apiUrl);
-    const clientes = await response.json();
+  clientes.forEach(cliente => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span>${cliente.nome} - ${cliente.email}</span>
+      <button data-id="${cliente._id}">Excluir</button>
+    `;
 
-    clientes.forEach(cliente => {
-      const li = document.createElement('li');
-      li.innerHTML = `
-        <span>${cliente.nome} - ${cliente.email}</span>
-        <button onclick="excluirCliente('${cliente._id}')">Excluir</button>
-      `;
-      listaClientes.appendChild(li);
+    const botaoExcluir = li.querySelector('button');
+    botaoExcluir.addEventListener('click', async () => {
+      await excluirCliente(cliente._id);
+      carregarClientes();
     });
 
-  } catch (error) {
-    console.error('Erro ao carregar clientes:', error);
-  }
+    listaClientes.appendChild(li);
+  });
 }
 
-// Excluir cliente
-async function excluirCliente(id) {
-  try {
-    await fetch(`${apiUrl}/${id}`, {
-      method: 'DELETE'
-    });
-    carregarClientes();
-  } catch (error) {
-    console.error('Erro ao excluir cliente:', error);
-  }
-}
+// Inicialização da aplicação
+document.addEventListener('DOMContentLoaded', carregarClientes);
