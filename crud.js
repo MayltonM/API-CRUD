@@ -1,5 +1,5 @@
 import { Cliente } from './Classes.js';
-import { cadastrarCliente, listarClientes, excluirCliente, get } from './Utils.js';
+import { cadastrarCliente, listarClientes, excluirCliente, calcularTotalLetrasNomes, get } from './Utils.js';
 
 const form = get('clienteForm');
 const listaClientes = get('listaClientes');
@@ -23,24 +23,31 @@ form.addEventListener('submit', async (e) => {
 
 // Carregar e exibir os clientes
 async function carregarClientes() {
-  listaClientes.innerHTML = '';
   const clientes = await listarClientes();
 
-  clientes.forEach(cliente => {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <span>${cliente.nome} - ${cliente.email}</span>
-      <button data-id="${cliente._id}">Excluir</button>
-    `;
+  const elementosCliente = clientes.map(criarElementoCliente);
+  listaClientes.innerHTML = '';
+  elementosCliente.forEach(el => listaClientes.appendChild(el));
 
-    const botaoExcluir = li.querySelector('button');
-    botaoExcluir.addEventListener('click', async () => {
-      await excluirCliente(cliente._id);
-      carregarClientes();
-    });
+  //apenas checando a quantidade de letras do nome de cliente para caso queira limitar futuramente
+  console.log("Total de letras nos nomes:", calcularTotalLetrasNomes(clientes));
+}
 
-    listaClientes.appendChild(li);
+function criarElementoCliente(cliente) {
+  const li = document.createElement('li');
+
+  li.innerHTML = `
+    <span>${cliente.nome} - ${cliente.email}</span>
+    <button data-id="${cliente._id}">Excluir</button>
+  `;
+
+  const botaoExcluir = li.querySelector('button');
+  botaoExcluir.addEventListener('click', async () => {
+    await excluirCliente(cliente._id);
+    carregarClientes();
   });
+
+  return li;
 }
 
 // Inicialização da aplicação

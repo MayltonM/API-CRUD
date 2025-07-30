@@ -1,5 +1,7 @@
 const apiUrl = 'https://crudcrud.com/api/7667f48a89a847c6bb3751f4b33a800e/unicorns';
 
+export const get = (_id_) => document.getElementById(_id_);
+
 export async function cadastrarCliente(cliente) {
   try {
     const response = await fetch(apiUrl, {
@@ -34,4 +36,12 @@ export async function excluirCliente(id) {
   }
 }
 
-export const get = (_id_) => document.getElementById(_id_);
+/**
+ * Calcula o total de letras nos nomes dos clientes 
+ * clientes - Lista de clientes
+ * Soma total de caracteres nos nomes
+ */
+
+export function calcularTotalLetrasNomes(clientes) {
+  return clientes.reduce((total, cliente) => total + cliente.nome.length, 0);
+}
